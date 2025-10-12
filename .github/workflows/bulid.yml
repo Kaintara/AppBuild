@@ -1,7 +1,7 @@
-name: Build_Kivy_APK
+name: Build_Kivy_APK_Ant
 
 on:
-  workflow_dispatch:  # Manual trigger from the Actions tab
+  workflow_dispatch:  # manual trigger
 
 jobs:
   build:
@@ -23,27 +23,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            build-essential \
-            git \
-            zip \
-            unzip \
-            openjdk-17-jdk \
-            python3-pip \
-            libgl1-mesa-dev \
-            libgles2-mesa-dev \
-            liblzma-dev \
-            zlib1g-dev \
-            libffi-dev \
-            libssl-dev \
-            libjpeg-dev \
-            libfreetype6-dev \
-            autoconf \
-            automake \
-            cmake \
-            pkg-config \
-            wget
+            build-essential git zip unzip openjdk-17-jdk ant python3-pip \
+            libgl1-mesa-dev libgles2-mesa-dev liblzma-dev zlib1g-dev \
+            libffi-dev libssl-dev libjpeg-dev libfreetype6-dev autoconf \
+            automake cmake pkg-config wget
 
-      - name: 📦 Install Buildozer and dependencies
+      - name: 📦 Install Buildozer & Python dependencies
         run: |
           pip install --upgrade pip
           pip install buildozer Cython virtualenv
@@ -54,48 +39,57 @@ jobs:
           path: ~/android-sdk
           key: ${{ runner.os }}-android-sdk-v1
 
-      - name: 📱 Install Android SDK and NDK
+      - name: 📱 Install Android SDK + NDK + Licenses
         run: |
           export ANDROID_HOME=$HOME/android-sdk
           export ANDROID_SDK_ROOT=$ANDROID_HOME
           mkdir -p "$ANDROID_HOME/cmdline-tools"
           cd "$ANDROID_HOME/cmdline-tools"
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
-          unzip -q cmdline-tools.zip
-          mv cmdline-tools latest
+          if [ ! -d "latest" ]; then
+            wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
+            unzip -q cmdline-tools.zip
+            mv cmdline-tools latest
+          fi
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
-          
+
+          # Accept all licenses
           yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses || true
-          sdkmanager --sdk_root=$ANDROID_HOME --update
+          
+          # Install required packages
           yes | sdkmanager --sdk_root=$ANDROID_HOME \
             "platform-tools" \
-            "platforms;android-34" \
-            "build-tools;34.0.0" \
+            "platforms;android-30" \
+            "build-tools;30.0.3" \
             "ndk;27.0.12077973"
 
-      - name: ⚙️ Set environment variables
+      - name: 🪄 Link SDK into Buildozer path
         run: |
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
-          echo "$HOME/android-sdk/build-tools/34.0.0" >> $GITHUB_PATH
-          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          mkdir -p ~/.buildozer/android/platform
+          ln -sf /home/runner/android-sdk ~/.buildozer/android/platform/android-sdk
+          ln -sf /home/runner/android-sdk/ndk/27.0.12077973 ~/.buildozer/android/platform/android-ndk
 
-      - name: 🔧 Initialize Buildozer (if needed)
+      - name: 🔧 Ensure buildozer.spec is configured for Ant
         run: |
           if [ ! -f buildozer.spec ]; then
             buildozer init
           fi
+          sed -i 's/^android.build_type =.*/android.build_type = ant/' buildozer.spec
+          grep -q "android.sdk_path" buildozer.spec || echo "android.sdk_path = /home/runner/android-sdk" >> buildozer.spec
+          grep -q "android.ndk_path" buildozer.spec || echo "android.ndk_path = /home/runner/android-sdk/ndk/27.0.12077973" >> buildozer.spec
+          grep -q "android.accept_sdk_license" buildozer.spec || echo "android.accept_sdk_license = True" >> buildozer.spec
+          grep -q "android.skip_update" buildozer.spec || echo "android.skip_update = True" >> buildozer.spec
 
-      - name: 🏗️ Build APK
+      - name: 🏗️ Build APK with Ant
         env:
           ANDROIDSDK: /home/runner/android-sdk
           ANDROIDNDK: /home/runner/android-sdk/ndk/27.0.12077973
+          ANDROID_HOME: /home/runner/android-sdk
+          ANDROID_SDK_ROOT: /home/runner/android-sdk
         run: |
           buildozer android debug
 
       - name: 📤 Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: kivy-app-debug-apk
+          name: kivy-app-ant-apk
           path: bin/*.apk
