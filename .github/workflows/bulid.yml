@@ -1,41 +1,35 @@
-name: Build_Kivy_APK
+name: Build Kivy/KivyMD APK
 
 on:
-  workflow_dispatch:  # manual trigger
+  workflow_dispatch: # Manual trigger
 
 jobs:
-  build:
+  build-android:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     env:
+      # Use $GITHUB_WORKSPACE for absolute paths
       ANDROIDSDK: $GITHUB_WORKSPACE/android-sdk
       ANDROIDNDK: $GITHUB_WORKSPACE/android-sdk/ndk/27.0.12077973
       ANDROID_HOME: $GITHUB_WORKSPACE/android-sdk
       ANDROID_SDK_ROOT: $GITHUB_WORKSPACE/android-sdk
       PATH: $GITHUB_WORKSPACE/android-sdk/cmdline-tools/latest/bin:${PATH}
-      
+
     steps:
-      - name: 🧩 Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: ⚙️ Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: 🧱 Install system dependencies
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            build-essential git zip unzip openjdk-17-jdk ant python3-pip \
-            libgl1-mesa-dev libgles2-mesa-dev liblzma-dev zlib1g-dev \
-            libffi-dev libssl-dev libjpeg-dev libfreetype6-dev autoconf \
-            automake cmake pkg-config wget
+            build-essential git wget unzip zip tar \
+            openjdk-17-jdk python3-pip \
+            libgl1-mesa-dev libgles2-mesa-dev \
+            liblzma-dev zlib1g-dev libffi-dev libssl-dev \
+            libjpeg-dev libfreetype6-dev autoconf automake cmake pkg-config
 
-      - name: 📦 Install Buildozer & Python dependencies
+      - name: Install Python dependencies
         run: |
           python3 -m pip install --upgrade pip
           pip install --upgrade buildozer Cython virtualenv
@@ -50,7 +44,7 @@ jobs:
               mv cmdline-tools latest
           fi
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
-          
+
           # Accept all licenses
           yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses
 
@@ -79,7 +73,7 @@ jobs:
 
       - name: Build APK
         run: |
-          buildozer android debug
+          yes | buildozer android debug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
