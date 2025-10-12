@@ -11,11 +11,11 @@ jobs:
       contents: write
 
     env:
-      ANDROIDSDK: ${{ github.workspace }}/android-sdk
-      ANDROIDNDK: ${{ github.workspace }}/android-sdk/ndk/27.0.12077973
-      ANDROID_HOME: ${{ github.workspace }}/android-sdk
-      ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk
-      PATH: ${{ github.workspace }}/android-sdk/cmdline-tools/latest/bin:${PATH}
+      ANDROIDSDK: $GITHUB_WORKSPACE/android-sdk
+      ANDROIDNDK: $GITHUB_WORKSPACE/android-sdk/ndk/27.0.12077973
+      ANDROID_HOME: $GITHUB_WORKSPACE/android-sdk
+      ANDROID_SDK_ROOT: $GITHUB_WORKSPACE/android-sdk
+      PATH: $GITHUB_WORKSPACE/android-sdk/cmdline-tools/latest/bin:${PATH}
       
     steps:
       - name: 🧩 Checkout repository
