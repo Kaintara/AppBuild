@@ -1,22 +1,41 @@
 name: Build_APK
 
 on:
-  workflow_dispatch:   # Manual run from the Actions tab
+  workflow_dispatch:  # Allows manual trigger from the Actions tab
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write   # Required to upload artifacts
+      contents: write   # Needed to upload artifacts
+
+    env:
+      USER: runner  # Prevents 'sudo chown' errors in the Buildozer action
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
-      - name: Buildozer-Kivy-Apk-Creator
+
+      - name: Set up Python (for local scripts, optional)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies (optional, if your buildozer.spec needs it)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev
+
+      - name: Build APK with Buildozer
         uses: wildspider57389928/Buildozer-Kivy-APK_Creator@4.0.0
         with:
           project-dir: .
           command: buildozer android debug
-          
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug.apk
+          path: |
+            bin/*.apk
