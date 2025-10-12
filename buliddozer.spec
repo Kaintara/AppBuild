@@ -39,8 +39,6 @@ android.archs = arm64-v8a, armeabi-v7a
 android.private_storage = True
 
 # (str) Android SDK/NDK paths
-android.sdk_path = /home/runner/android-sdk
-android.ndk_path = /home/runner/android-sdk/ndk/27.0.12077973
 
 # (bool) Skip SDK/NDK updates (we preinstalled them)
 android.skip_update = True
