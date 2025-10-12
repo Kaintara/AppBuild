@@ -42,11 +42,15 @@ jobs:
             cmake \
             pkg-config
           sudo apt install -y libtool libltdl-dev automake autoconf
+          sudo apt update
 
       - name: 🐍 Install Buildozer and Cython
         run: |
           pip install --upgrade pip
           pip install buildozer Cython virtualenv
+
+      - name: Verify Buildozer installation
+        run: buildozer version
 
       - name: 🔧 Initialize Buildozer (if needed)
         run: |
