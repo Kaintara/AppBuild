@@ -10,6 +10,13 @@ jobs:
     permissions:
       contents: write
 
+    env:
+      ANDROIDSDK: ${{ github.workspace }}/android-sdk
+      ANDROIDNDK: ${{ github.workspace }}/android-sdk/ndk/27.0.12077973
+      ANDROID_HOME: ${{ github.workspace }}/android-sdk
+      ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk
+      PATH: ${{ github.workspace }}/android-sdk/cmdline-tools/latest/bin:${PATH}
+      
     steps:
       - name: 🧩 Checkout repository
         uses: actions/checkout@v4
@@ -30,66 +37,52 @@ jobs:
 
       - name: 📦 Install Buildozer & Python dependencies
         run: |
-          pip install --upgrade pip
-          pip install buildozer Cython virtualenv
+          python3 -m pip install --upgrade pip
+          pip install --upgrade buildozer Cython virtualenv
 
-      - name: 💾 Cache Android SDK
-        uses: actions/cache@v4
-        with:
-          path: ~/android-sdk
-          key: ${{ runner.os }}-android-sdk-v1
-
-      - name: 📱 Install Android SDK + NDK + Licenses
+      - name: Setup Android SDK cmdline-tools
         run: |
-          export ANDROID_HOME=$HOME/android-sdk
-          export ANDROID_SDK_ROOT=$ANDROID_HOME
-          mkdir -p "$ANDROID_HOME/cmdline-tools"
-          cd "$ANDROID_HOME/cmdline-tools"
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          cd $ANDROID_HOME/cmdline-tools
           if [ ! -d "latest" ]; then
-            wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
-            unzip -q cmdline-tools.zip
-            mv cmdline-tools latest
+              wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
+              unzip -q cmdline-tools.zip
+              mv cmdline-tools latest
           fi
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
-
-          # Accept all licenses
-          yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses || true
           
-          # Install required packages
-          yes | sdkmanager --sdk_root=$ANDROID_HOME \
-            "platform-tools" \
-            "platforms;android-30" \
-            "build-tools;30.0.3" \
-            "ndk;27.0.12077973"
+          # Accept all licenses
+          yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses
 
-      - name: 🪄 Link SDK into Buildozer path
+          # Install required SDK/NDK packages
+          sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-33" "build-tools;33.0.2" "ndk;27.0.12077973"
+
+      - name: Link SDK/NDK to Buildozer expected path
         run: |
           mkdir -p ~/.buildozer/android/platform
-          ln -sf /home/runner/android-sdk ~/.buildozer/android/platform/android-sdk
-          ln -sf /home/runner/android-sdk/ndk/27.0.12077973 ~/.buildozer/android/platform/android-ndk
+          ln -sf $ANDROID_HOME ~/.buildozer/android/platform/android-sdk
+          ln -sf $ANDROID_HOME/ndk/27.0.12077973 ~/.buildozer/android/platform/android-ndk
 
-      - name: 🔧 Ensure buildozer.spec is configured for Ant
+      - name: Prepare buildozer.spec
         run: |
+          # Ensure the spec file exists
           if [ ! -f buildozer.spec ]; then
-            buildozer init
+              buildozer init
           fi
-          sed -i 's/^android.build_type =.*/android.build_type = ant/' buildozer.spec
-          grep -q "android.sdk_path" buildozer.spec || echo "android.sdk_path = /home/runner/android-sdk" >> buildozer.spec
-          grep -q "android.ndk_path" buildozer.spec || echo "android.ndk_path = /home/runner/android-sdk/ndk/27.0.12077973" >> buildozer.spec
-          grep -q "android.accept_sdk_license" buildozer.spec || echo "android.accept_sdk_license = True" >> buildozer.spec
-          grep -q "android.skip_update" buildozer.spec || echo "android.skip_update = True" >> buildozer.spec
 
-      - name: 🏗️ Build APK with Ant
-        env:
-          ANDROIDSDK: /home/runner/android-sdk
-          ANDROIDNDK: /home/runner/android-sdk/ndk/27.0.12077973
-          ANDROID_HOME: /home/runner/android-sdk
-          ANDROID_SDK_ROOT: /home/runner/android-sdk
+          # Force Gradle (default) and correct SDK/NDK paths
+          sed -i 's/^android.build_type =.*/# android.build_type = gradle/' buildozer.spec || true
+          grep -q "android.sdk_path" buildozer.spec || echo "android.sdk_path = $ANDROID_HOME" >> buildozer.spec
+          grep -q "android.ndk_path" buildozer.spec || echo "android.ndk_path = $ANDROID_HOME/ndk/27.0.12077973" >> buildozer.spec
+          grep -q "android.skip_update" buildozer.spec || echo "android.skip_update = True" >> buildozer.spec
+          grep -q "android.accept_sdk_license" buildozer.spec || echo "android.accept_sdk_license = True" >> buildozer.spec
+
+      - name: Build APK
         run: |
           buildozer android debug
 
-      - name: 📤 Upload APK artifact
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: kivy-app-ant-apk
+          name: kivy-app-apk
           path: bin/*.apk
