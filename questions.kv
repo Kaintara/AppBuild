@@ -1,0 +1,275 @@
+#:kivy 2.3.0
+
+<MainMenu>:
+    MDFloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 0.9, 0.93, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Image:
+            source: app.resource_path('Q.png')
+            allow_stretch: True
+            keep_ratio: True
+            size_hint: 1, 1
+            pos_hint: {"x": 0, "y": 0}
+        MDLabel:
+            width: root.width
+            height: root.height*0.3
+            text: "Guess the Liar!"
+            font_style: "cataway"
+            halign: 'center'
+            pos_hint: {"top":0.9, "center_x":0.5}
+            size_hint: None, None
+            role: "large"
+        MDBoxLayout:
+            orientation: 'vertical'
+            pos_hint: {"center_x": 0.5, "top": 0.3}
+            size_hint: None, None
+            MDButton:
+                style: "tonal"
+                size_hint: 0.25, 0.025
+                on_release: root.manager.current = "InGame"
+                pos_hint: {"center_x":0.5}
+                shadow_radius: [0, 0, 0, 0]
+                radius: [25, 25, 25, 25]
+                MDButtonText:
+                    text: "New Game"
+                    font_style: "cataway"
+                    role: "small"
+            MDWidget:
+                size_hint_y: 0.025
+            MDButton:
+                style: "tonal"
+                size_hint: 0.25, 0.025
+                on_release: root.manager.current = "Rules"
+                pos_hint: {"center_x":0.5}
+                shadow_radius: [0, 0, 0, 0]
+                radius: [25, 25, 25, 25]
+                MDButtonText:
+                    text: "How to Play"
+                    font_style: "cataway"
+                    role: "small"
+
+<InGame>:
+    MDFloatLayout:
+        FitImage:
+            source: app.resource_path('S.png')
+        MDLabel:
+            id: GameTitle
+            width: root.width
+            height: root.height*0.3
+            text: "Enter the Amount of Players!"
+            font_style: "cataway"
+            halign: 'center'
+            pos_hint: {"top":0.9, "center_x":0.5}
+            size_hint: None, None
+            role: "large"
+        MDTextField:
+            id: Input
+            pos_hint: {"center_y":0.5,"center_x":0.5}
+            size_hint: None, None
+            width: root.width*0.5
+            mode: "filled"
+            icon_right: "account-multiple"
+            MDTextFieldHintText:
+                id: error
+                text: "3-10 Players"
+        MDButton:
+            id: StartBtn
+            style: "tonal"
+            pos_hint: {"top":0.3, "center_x":0.5}
+            on_release: app.start()
+            MDButtonText:
+                text: "Start!"
+                font_style: "cataway"
+                role: "small"  
+        MDButton:
+            id: SubmitBtn
+            size_hint: 0,0
+            style: "tonal"
+            pos_hint: {"top":0.3, "center_x":0.5}
+            on_release: app.start()
+            opacity: 0
+            disabled: True
+            MDButtonText:
+                text: "Submit"
+                font_style: "cataway"
+                role: "small"
+        MDBoxLayout:
+            id: Players
+            orientation: 'vertical'
+            pos_hint: {"center_x": 0.5, "top": 0.3}
+            size_hint: None, None
+            width: root.width * 0.5
+            spacing: "10dp"
+
+        MDButton:
+            style: "elevated"
+            pos_hint: {"top":0.1, "center_x":0.5}
+            on_release: root.manager.current = "Menu"
+            MDButtonText:
+                text: "Back to Menu"
+                font_style: "cataway"
+                role: "small"
+        MDIconButton:
+            icon:"arrow-left"
+            icon_size: "36sp"
+            pos_hint: {"x": 0.02, "top": 0.98}
+            theme_icon_color: "Custom"
+            icon_color: 1, 0.5, 0.6, 1 
+            on_release: root.manager.current = "Menu"
+
+<GamePlay>:
+    MDFloatLayout:
+        id: GamePY
+        FitImage:
+            source: app.resource_path('S.png')
+        MDButton:
+            style: "elevated"
+            pos_hint: {"top":0.1, "center_x":0.5}
+            on_release: root.manager.current = "Menu"
+            MDButtonText:
+                text: "Back to Menu"
+                font_style: "cataway"
+                role: "small"
+        MDIconButton:
+            icon:"arrow-left"
+            icon_size: "36sp"
+            pos_hint: {"x": 0.02, "top": 0.98}
+            theme_icon_color: "Custom"
+            icon_color: 1, 0.5, 0.6, 1 
+            on_release: root.manager.current = "Menu"
+            
+            
+
+<Rules>:
+    MDFloatLayout:
+        FitImage:
+            source: app.resource_path('S.png')
+        MDScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            MDBoxLayout:
+                orientation: 'vertical'
+                padding: "20dp"
+                spacing: "20dp"
+                height: self.minimum_height
+                size_hint_y: None
+                MDLabel:
+                    text: "How to Play!"
+                    font_style: "cataway"
+                    role: "large"
+                    halign: 'center'
+                    valign: "top"
+                    pos_hint: {"top":0.9, "center_x":0.5}
+                    size_hint: None, None
+                    height: self.texture_size[1]
+                    text_size: self.width*10, None
+                MDLabel:
+                    text: "Welcome to [b]Guess the Liar![/b] This game is inspired by [b]The Chameleon[/b] and other bluffing games - expect the rules to be similar."
+                    halign: "center"
+                    valign: "top"
+                    markup: True
+                    size_hint_x: 0.8
+                    pos_hint: {"center_x": 0.5}
+                    text_size: self.width, None
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    font_style: "cataway"
+                    role: "medium"
+                    theme_font_size: "Custom"
+                    font_size: 20
+                    shorten: False
+
+                MDLabel:
+                    text:"[b]1. Pick your players[/b]\nThe main player (that’s you, the phone holder) starts by choosing how many people will play. You can type in everyone’s names or just roll with the defaults - Player 1, Player 2, and so on.\n\n"
+                    halign: "center"
+                    valign: "top"
+                    markup: True
+                    size_hint_x: 0.8
+                    pos_hint: {"center_x": 0.5}
+                    text_size: self.width, None
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    font_style: "cataway"
+                    role: "medium"
+                    shorten: False
+                    theme_font_size: "Custom"
+                    font_size: 20
+                MDLabel:
+                    text:"[b]2. Get ready to play[/b]\nOnce you tap Start, the game kicks off! The first player’s name will appear on the screen, pass the phone around based on whoever's name appears on screen.\n\n"
+                    halign: "center"
+                    valign: "top"
+                    markup: True
+                    size_hint_x: 0.8
+                    pos_hint: {"center_x": 0.5}
+                    text_size: self.width, None
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    font_style: "cataway"
+                    role: "medium"
+                    shorten: False
+                    theme_font_size: "Custom"
+                    font_size: 20
+                MDLabel:
+                    text:"[b]3. Answer your question[/b]\nEach player gets their turn to read and answer a question on the device.\nThere’s a catch though - one player will secretly get a [i]different[/i] question! \nThe player with the different question, won't know they recieved it."
+                    halign: "center"
+                    valign: "top"
+                    markup: True
+                    size_hint_x: 0.8
+                    pos_hint: {"center_x": 0.5}
+                    text_size: self.width, None
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    font_style: "cataway"
+                    role: "medium"
+                    shorten: False
+                    theme_font_size: "Custom"
+                    font_size: 20
+                MDLabel:
+                    text:"[b]4. Reveal time![/b]\nOnce everyone’s answered, it’s time to show the answers.\nEach player's response can be announced verbally or revealed on the device.\n"
+                    halign: "center"
+                    valign: "top"
+                    markup: True
+                    size_hint_x: 0.8
+                    pos_hint: {"center_x": 0.5}
+                    text_size: self.width, None
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    font_style: "cataway"
+                    role: "medium"
+                    shorten: False
+                    theme_font_size: "Custom"
+                    font_size: 20
+                MDLabel:
+                    text:"[b]5. The vote[/b]\nTo end the round, each player votes for who they think is the liar.\nWhen a decision has been made, clicking on reveal the liar will show who the true liar is!\n"
+                    halign: "center"
+                    valign: "top"
+                    markup: True
+                    size_hint_x: 0.8
+                    pos_hint: {"center_x": 0.5}
+                    text_size: self.width, None
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    font_style: "cataway"
+                    role: "medium"
+                    shorten: False
+                    theme_font_size: "Custom"
+                    font_size: 20
+                MDButton:
+                    style: "elevated"
+                    pos_hint: {"top":0.1, "center_x":0.5}
+                    on_release: root.manager.current = "Menu"
+                    MDButtonText:
+                        text: "Back to Menu"
+                        font_style: "cataway"
+                        role: "small"
+        MDIconButton:
+            icon:"arrow-left"
+            icon_size: "36sp"
+            pos_hint: {"x": 0.02, "top": 0.98}
+            theme_icon_color: "Custom"
+            icon_color: 1, 0.5, 0.6, 1 
+            on_release: root.manager.current = "Menu"
