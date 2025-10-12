@@ -1,4 +1,4 @@
-name: Build_Kivy_APK_Ant
+name: Build_Kivy_APK
 
 on:
   workflow_dispatch:  # manual trigger
