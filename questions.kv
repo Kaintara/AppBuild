@@ -9,7 +9,7 @@
                 pos: self.pos
                 size: self.size
         Image:
-            source: app.resource_path('Q.png')
+            source: 'Q.png'
             allow_stretch: True
             keep_ratio: True
             size_hint: 1, 1
@@ -55,7 +55,7 @@
 <InGame>:
     MDFloatLayout:
         FitImage:
-            source: app.resource_path('S.png')
+            source: 'S.png'
         MDLabel:
             id: GameTitle
             width: root.width
@@ -125,7 +125,7 @@
     MDFloatLayout:
         id: GamePY
         FitImage:
-            source: app.resource_path('S.png')
+            source: 'S.png'
         MDButton:
             style: "elevated"
             pos_hint: {"top":0.1, "center_x":0.5}
@@ -147,7 +147,7 @@
 <Rules>:
     MDFloatLayout:
         FitImage:
-            source: app.resource_path('S.png')
+            source: 'S.png'
         MDScrollView:
             do_scroll_x: False
             do_scroll_y: True
@@ -272,4 +272,5 @@
             pos_hint: {"x": 0.02, "top": 0.98}
             theme_icon_color: "Custom"
             icon_color: 1, 0.5, 0.6, 1 
+
             on_release: root.manager.current = "Menu"
