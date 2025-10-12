@@ -20,7 +20,6 @@ jobs:
 
       - name: Build APK
         run: |
-          source $GITHUB_ENV
           yes | buildozer -v android debug
 
       - name: Upload APK artifact
