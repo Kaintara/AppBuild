@@ -41,6 +41,7 @@ jobs:
             automake \
             cmake \
             pkg-config
+          sudo apt install -y libtool libltdl-dev automake autoconf
 
       - name: 🐍 Install Buildozer and Cython
         run: |
