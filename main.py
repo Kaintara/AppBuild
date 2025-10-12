@@ -80,12 +80,6 @@ class Overlay(Widget):
 
 #App Bulid
 class QuestionsApp(MDApp):
-    def resource_path(self,relative_path):
-            try:
-                base_path = sys._MEIPASS
-            except Exception:
-                base_path = os.path.abspath(".")
-            return os.path.join(base_path, relative_path)
     
     def build(self):
 
@@ -93,11 +87,11 @@ class QuestionsApp(MDApp):
         self.theme_cls.primary_palette = "Pink"
         self.theme_cls.primary_hue = "1000"
 
-        Window.set_icon(self.resource_path("icon.png"))
+        Window.set_icon("icon.png")
 
         LabelBase.register(
             name="cataway",
-            fn_regular=self.resource_path("Catways.ttf"),
+            fn_regular="Catways.ttf",
         )
 
         self.theme_cls.font_styles["cataway"] = {
@@ -424,6 +418,7 @@ class QuestionsApp(MDApp):
             num.error = True
             err.text = "Must be a number greater than 3!"
             self.shake_animation(num)
+
 
 
 QuestionsApp().run()
