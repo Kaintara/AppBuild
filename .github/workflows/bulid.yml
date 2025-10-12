@@ -1,82 +1,30 @@
-name: Build Kivy/KivyMD APK
-
-on:
-  workflow_dispatch: # Manual trigger
-
+name: Build APK
+on: [push]
 jobs:
   build-android:
+    name: Build for Android
     runs-on: ubuntu-latest
-
-    env:
-      # Use $GITHUB_WORKSPACE for absolute paths
-      ANDROIDSDK: $GITHUB_WORKSPACE/android-sdk
-      ANDROIDNDK: $GITHUB_WORKSPACE/android-sdk/ndk/27.0.12077973
-      ANDROID_HOME: $GITHUB_WORKSPACE/android-sdk
-      ANDROID_SDK_ROOT: $GITHUB_WORKSPACE/android-sdk
-      PATH: $GITHUB_WORKSPACE/android-sdk/cmdline-tools/latest/bin:${PATH}
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: Install system dependencies
+      - name: Buildozer dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential git wget unzip zip tar \
-            openjdk-17-jdk python3-pip \
-            libgl1-mesa-dev libgles2-mesa-dev \
-            liblzma-dev zlib1g-dev libffi-dev libssl-dev \
-            libjpeg-dev libfreetype6-dev autoconf automake cmake pkg-config
+          sudo apt update
+          sudo apt install -y git zip unzip python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev automake
+          pip install --user --upgrade Cython virtualenv
+          pip install --user --upgrade buildozer
+          echo 'export PATH=$PATH:~/.local/bin/' >> ~/.bashrc
 
-      - name: Install Python dependencies
+      - name: Handle Java path
         run: |
-          python3 -m pip install --upgrade pip
-          pip install --upgrade buildozer Cython virtualenv
+          export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
+          sudo update-java-alternatives --set ${JAVA_HOME}
+          export PATH=$JAVA_HOME/bin:$PATH
+          yes | buildozer -v android debug
 
-      - name: Setup Android SDK cmdline-tools
-        run: |
-          mkdir -p $ANDROID_HOME/cmdline-tools
-          cd $ANDROID_HOME/cmdline-tools
-          if [ ! -d "latest" ]; then
-              wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
-              unzip -q cmdline-tools.zip
-              mv cmdline-tools latest
-          fi
-          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
-
-          # Accept all licenses
-          yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses
-
-          # Install required SDK/NDK packages
-          sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-33" "build-tools;33.0.2" "ndk;27.0.12077973"
-
-      - name: Link SDK/NDK to Buildozer expected path
-        run: |
-          mkdir -p ~/.buildozer/android/platform
-          ln -sf $ANDROID_HOME ~/.buildozer/android/platform/android-sdk
-          ln -sf $ANDROID_HOME/ndk/27.0.12077973 ~/.buildozer/android/platform/android-ndk
-
-      - name: Prepare buildozer.spec
-        run: |
-          # Ensure the spec file exists
-          if [ ! -f buildozer.spec ]; then
-              buildozer init
-          fi
-
-          # Force Gradle (default) and correct SDK/NDK paths
-          sed -i 's/^android.build_type =.*/# android.build_type = gradle/' buildozer.spec || true
-          grep -q "android.sdk_path" buildozer.spec || echo "android.sdk_path = $ANDROID_HOME" >> buildozer.spec
-          grep -q "android.ndk_path" buildozer.spec || echo "android.ndk_path = $ANDROID_HOME/ndk/27.0.12077973" >> buildozer.spec
-          grep -q "android.skip_update" buildozer.spec || echo "android.skip_update = True" >> buildozer.spec
-          grep -q "android.accept_sdk_license" buildozer.spec || echo "android.accept_sdk_license = True" >> buildozer.spec
-
-      - name: Build APK
-        run: |
-          yes | buildozer android debug
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
         with:
-          name: kivy-app-apk
+          name: package
           path: bin/*.apk
