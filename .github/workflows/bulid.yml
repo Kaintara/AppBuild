@@ -88,6 +88,9 @@ jobs:
           fi
 
       - name: 🏗️ Build APK
+        env:
+          ANDROIDSDK: /home/runner/android-sdk
+          ANDROIDNDK: /home/runner/android-sdk/ndk/27.0.12077973
         run: |
           buildozer android debug
 
