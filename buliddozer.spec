@@ -49,6 +49,9 @@ android.accept_sdk_license = True
 # (str) Format used to package the app for debug
 android.debug_artifact = apk
 
+p4a.url = https://github.com/kivy/python-for-android.git
+p4a.branch = develop
+
 [buildozer]
 # (int) Log level (0 = error only, 1 = info, 2 = debug)
 log_level = 2
