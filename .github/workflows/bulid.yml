@@ -44,6 +44,10 @@ jobs:
             libtool \
             libltdl-dev
 
+      - name: Debug path
+        run: |
+          echo "Current dir: $(pwd)"
+          ls -la 
       - name: Create and activate virtual environment
         run: |
           python -m venv venv
@@ -54,6 +58,7 @@ jobs:
       - name: Build Android APK
         run: |
           source venv/bin/activate
+          cd $GITHUB_WORKSPACE
           yes | buildozer android clean
           yes | buildozer android debug
 
