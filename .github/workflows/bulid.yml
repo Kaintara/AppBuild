@@ -59,6 +59,7 @@ jobs:
         run: |
           source venv/bin/activate
           cd $GITHUB_WORKSPACE
+          yes | buildozer android update
           yes | buildozer android debug
 
       - name: 📤 Upload APK artifact
