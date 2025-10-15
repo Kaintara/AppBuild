@@ -53,6 +53,7 @@ android.debug_artifact = apk
 
 p4a.url = https://github.com/kivy/python-for-android.git
 p4a.branch = develop
+p4a.python_version = 3.10
 
 [buildozer]
 # (int) Log level (0 = error only, 1 = info, 2 = debug)
