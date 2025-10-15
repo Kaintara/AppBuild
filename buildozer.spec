@@ -18,7 +18,7 @@ source.include_exts = py,kv,ttf,png,jpg,mp3,json,txt
 version = 1.0
 
 # (list) Application requirements
-requirements = python3, kivy==2.3.0, kivymd @ https://github.com/kivymd/KivyMD/archive/master.zip, pillow   
+requirements = python3, kivy==2.3.0, pillow, kivymd @ https://github.com/kivymd/KivyMD/archive/master.zip
 
 # (str) Icon of the application
 icon.filename = icon.png
