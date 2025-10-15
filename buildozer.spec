@@ -41,7 +41,7 @@ android.private_storage = True
 # (str) Android SDK/NDK paths
 
 # (bool) Skip SDK/NDK updates (we preinstalled them)
-android.skip_update = True
+#android.skip_update = True
 
 # (bool) Automatically accept SDK licenses
 android.accept_sdk_license = True
