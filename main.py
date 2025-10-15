@@ -60,7 +60,7 @@ class TurnBtn(MDButton):
         super().__init__(**kwargs)
         self.style ="tonal"
         self.size_hint = (None, None)
-        self.size = (200, 50)
+        self.size = (500, 50)
         self.pos_hint= {"center_x":0.5,"top":0.3}
         self.elevation= 0
         self.radius= [25, 25, 25, 25]
@@ -140,7 +140,7 @@ class QuestionsApp(MDApp):
     def reveal_liar(self):
         games = self.get_widget('GamePY', 'GamePlay')
         games.clear_widgets()
-        img = FitImage(source=self.resource_path('S.png'))
+        img = FitImage(source='S.png')
         games.add_widget(img)
         reveal = MDLabel(
         text=f"The Liar was....",
@@ -214,7 +214,7 @@ class QuestionsApp(MDApp):
     def voting(self):
         games = self.get_widget('GamePY', 'GamePlay')
         games.clear_widgets()
-        img = FitImage(source=self.resource_path('S.png'))
+        img = FitImage(source='S.png')
         games.add_widget(img)
         question_label = MDLabel(
         text=f"Question: {game.current_question}",
@@ -313,7 +313,7 @@ class QuestionsApp(MDApp):
         games.clear_widgets()
         x = game.turn[game.current_turn]
         i = game.current_turn
-        img = FitImage(source=self.resource_path('S.png'))
+        img = FitImage(source='S.png')
         wid = Overlay(size_hint=(10,10),pos=(0,0))
         cir = CircleLabel(text=f"{x[0]}",pos_hint={"center_x":0.5,"center_y":0.75})
         cir.theme_bg_color = "Custom"
@@ -326,7 +326,7 @@ class QuestionsApp(MDApp):
         size_hint=(None,None),
         pos_hint={"center_x": 0.5, "center_y": 0.55})
         names.text_size = (None, None)
-        names.size = (250, 50)
+        names.size = (500, 50)
         btn = TurnBtn(text=f"I am {x}!")
         btn.theme_bg_color = "Custom"
         btn.md_bg_color = game.colours[i]
@@ -422,3 +422,4 @@ class QuestionsApp(MDApp):
 
 
 QuestionsApp().run()
+
