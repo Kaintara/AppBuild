@@ -29,6 +29,8 @@ orientation = portrait
 # (int) Target Android API
 android.api = 30
 
+android.ndk = 27b
+
 # (int) Minimum API your APK supports
 android.minapi = 21
 
