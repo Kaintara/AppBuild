@@ -27,7 +27,7 @@ icon.filename = icon.png
 orientation = portrait
 
 # (int) Target Android API
-android.api = 30
+android.api = 31
 
 android.ndk = 27b
 
