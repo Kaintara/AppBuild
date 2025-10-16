@@ -12,13 +12,13 @@ package.domain = org.guesstheliar.app
 source.dir = .
 
 # (list) Source files to include
-source.include_exts = py,kv,ttf,png,jpg,mp3,json,txt
+source.include_exts = py,kv,ttf,png,jpg,txt,atlas
 
 # (str) Application version
 version = 1.0
 
 # (list) Application requirements
-requirements = setuptools<70, cython==0.29.36, python3, kivy==2.3.1, pillow==9.0.0, https://github.com/kivymd/KivyMD/archive/master.zip
+requirements = setuptools<70, cython==0.29.36, python3, kivy==2.3.1, pillow==9.0.0, kivymd2
 
 # (str) Icon of the application
 icon.filename = icon.png
