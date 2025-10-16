@@ -18,7 +18,7 @@ source.include_exts = py,kv,ttf,png,jpg,txt,atlas
 version = 1.0
 
 # (list) Application requirements
-requirements = setuptools<70, cython==0.29.36, python3, kivy==2.3.1, pillow==9.0.0, kivymd2
+requirements = setuptools<70, cython==0.29.36, python3, kivy==2.3.1, pillow==9.0.0, materialyoucolor, exceptiongroup, asyncgui, asynckivy, https://github.com/kivymd/KivyMD/archive/master.zip
 
 # (str) Icon of the application
 icon.filename = icon.png
